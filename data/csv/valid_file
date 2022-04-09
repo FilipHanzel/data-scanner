@@ -1,0 +1,11 @@
+string,integer,float,boolean,date,timestamp,json
+abc,1,1.0,True,2022-11-03,2022-11-03T01:41:51,"{""b"": 2, ""c"": 3}"
+def,2,1.1,true,2021-12-02,2022-11-03T10:21:23,{}
+ghi,3,2.3,False,2020-01-12,2020-01-12T10:01:11,{}
+jkl,4,19.123,False,2022-03-03,2022-03-03T03:21:01,{}
+"mno",5,0.5,false,2000-01-01,2000-01-01T01:11:01,{}
+None,6,.5,True,2021-02-02,2021-02-02T00:11:21,"[""a"", ""b"", ""c""]"
+None,None,None,None,None,None,None
+Null,Null,Null,Null,Null,Null,Null
+null,null,null,null,null,null,null
+,,,,,,
