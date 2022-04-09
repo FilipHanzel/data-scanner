@@ -262,12 +262,14 @@ if __name__ == "__main__":
 
     profiler = line_profiler.LineProfiler()
     profiled_function = profiler(processor.run)
+    profiled_function()
 
     print("[TEST] Ouput from processor.run profile:")
     profiler.print_stats()
 
     profiler = memory_profiler.LineProfiler()
     profiled_function = profiler(processor.run)
+    profiled_function()
 
     print("[TEST] Ouput from processor.run profile:")
     memory_profiler.show_results(profiler)
