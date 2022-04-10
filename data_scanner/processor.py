@@ -11,16 +11,23 @@ from .scanner import Scanner
 class Processor:
     """Main class. Puts everyting together and implements multiprocessing."""
 
-    def __init__(self, root_folder: Union[str, os.PathLike]):
+    def __init__(self, path: Union[str, os.PathLike]):
+        assert path is not None, "path must be specified"
+
         self.cores = mp.cpu_count()
-        self.file_list = [
-            file_path
-            for file_path in [
-                root_folder + os.sep + file_name
-                for file_name in os.listdir(root_folder)
+
+        if os.path.isfile(path):
+            self.file_list = [path]
+        elif os.path.isdir(path):
+            self.file_list = [
+                file_path
+                for file_path in [
+                    path + os.sep + file_name for file_name in os.listdir(path)
+                ]
+                if os.path.isfile(file_path)
             ]
-            if os.path.isfile(file_path)
-        ]
+
+        assert len(self.file_list) > 0, "no files to scan"
 
     def run_workers(self):
         """Allows for utilizing"""
