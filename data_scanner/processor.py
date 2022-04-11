@@ -26,6 +26,8 @@ class Processor:
                 ]
                 if os.path.isfile(file_path)
             ]
+        else:
+            self.file_list = []
 
         assert len(self.file_list) > 0, "no files to scan"
 
@@ -86,6 +88,7 @@ class Processor:
                 while True:
                     err = error_queue.get_nowait()
                     print("[WORKER ERROR]", err)
+                    schemas.append({})
             except queue.Empty as e:
                 pass
 
