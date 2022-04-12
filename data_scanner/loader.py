@@ -1,33 +1,38 @@
 import os
 import abc
 import csv
-from typing import List, Dict, Union
+from typing import Union, Iterable
 
 
 class Loader(abc.ABC):
     @abc.abstractmethod
-    def load(self, file_path: Union[str, os.PathLike]) -> Dict[str, List[str]]:
+    def __enter__(self):
+        pass
+
+    @abc.abstractmethod
+    def __exit__(self):
         pass
 
 
 class CSVLoader(Loader):
-    def load(self, file_path: Union[str, os.PathLike]) -> Dict[str, List[str]]:
-        with open(file_path, "rt") as f:
-            csv_reader = csv.reader(f)
-            try:
-                self.head = next(csv_reader)
-            except StopIteration:
-                self.head = []
-                self.records = []
-                return {}
-            self.records = list(csv_reader)
+    def __init__(self, file_path: Union[str, os.PathLike]):
+        self.file_path = file_path
 
-        # Assert rows length
-        for row in self.records:
-            if len(row) != len(self.head):
-                raise ValueError("malformed csv, invalid row length")
+        self._file = None
+        self._reader = None
 
-        return {
-            name: [record[idx] for record in self.records]
-            for idx, name in enumerate(self.head)
-        }
+    def open(self) -> Iterable:
+        self._file = open(self.file_path, "rt")
+        self._reader = csv.reader(self._file)
+        return self._reader
+
+    def close(self):
+        self._reader = None
+        self._file.close()
+        self._file = None
+
+    def __enter__(self) -> Iterable:
+        return self.open()
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.close()
