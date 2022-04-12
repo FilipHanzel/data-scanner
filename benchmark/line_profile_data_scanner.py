@@ -32,20 +32,21 @@ def main():
     profiled_function()
     memory_profiler.show_results(profiler)
 
-    print("[INFO] Running line profilers on scanner (get_dtype)...")
-    loader = CSVLoader()
-    scanner = Scanner(loader.load(file_path))
-    _scanner_get_dtype = scanner.get_dtype
+    print("[INFO] Running line profiler on scanner (_get_dtype)...")
+    with CSVLoader(file_path) as loader:
+        scanner = Scanner(loader)
+        profiler = line_profiler.LineProfiler()
+        scanner._get_dtype = profiler(scanner._get_dtype)
+        scanner.get_schema()
+        profiler.print_stats()
 
-    profiler = line_profiler.LineProfiler()
-    scanner.get_dtype = profiler(_scanner_get_dtype)
-    scanner.get_schema()
-    profiler.print_stats()
-
-    profiler = memory_profiler.LineProfiler()
-    scanner.get_dtype = profiler(_scanner_get_dtype)
-    scanner.get_schema()
-    memory_profiler.show_results(profiler)
+    print("[INFO] Running line profilers on scanner (get_schema)...")
+    with CSVLoader(file_path) as loader:
+        scanner = Scanner(loader)
+        profiler = line_profiler.LineProfiler()
+        scanner.get_schema = profiler(scanner.get_schema)
+        scanner.get_schema()
+        profiler.print_stats()
 
 
 if __name__ == "__main__":
