@@ -31,8 +31,7 @@ class Processor:
 
         assert len(self.file_list) > 0, "no files to scan"
 
-    def run_workers(self):
-        """Allows for utilizing"""
+    def run_workers(self) -> List[Dict[str, str]]:
         input_queue = mp.Queue(maxsize=len(self.file_list) + self.cores)
         output_queue = mp.Queue(maxsize=len(self.file_list))
         error_queue = mp.Queue(maxsize=len(self.file_list))
@@ -100,26 +99,26 @@ class Processor:
     @staticmethod
     def _worker_target(
         input_queue: mp.Queue, output_queue: mp.Queue, error_queue: mp.Queue
-    ):
+    ) -> None:
         while True:
             file_name = input_queue.get()
             if file_name is None:
                 break
             try:
-                frame = CSVLoader().load(file_name)
-                schema = Scanner(frame).get_schema()
+                with CSVLoader(file_name) as loader:
+                    schema = Scanner(loader).get_schema()
                 output_queue.put(schema)
             except Exception as e:
                 error_queue.put(e)
 
-    def run(self):
+    def run(self) -> List[Dict[str, str]]:
         schemas = []
         for file_name in self.file_list:
             try:
-                frame = CSVLoader().load(file_name)
-                schema = Scanner(frame).get_schema()
+                with CSVLoader(file_name) as loader:
+                    schema = Scanner(loader).get_schema()
                 schemas.append(schema)
             except Exception as e:
-                print("[RUN]", e)
+                print("[ERROR]", e)
                 schemas.append({})
         return schemas
