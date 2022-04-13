@@ -11,11 +11,14 @@ from .logger import logger
 
 
 class Processor:
-    """Main class. Puts everyting together and implements multiprocessing."""
+    """Main Data Scanner class.
+
+    Processor is responsible for putting Data Scanner together.
+    It's a main entry point to the package. Allows for sequential
+    and parallel scan of multiple files.
+    """
 
     def __init__(self, path: Union[str, os.PathLike]):
-        assert path is not None, "path must be specified"
-
         self.cores = mp.cpu_count()
 
         if os.path.isfile(path):
@@ -35,6 +38,12 @@ class Processor:
             logger.error(f"No files found for path: '{path}'")
 
     def run_workers(self) -> List[Dict[str, str]]:
+        """Scan multiple files in parallel.
+        
+        This method allows running multiple python processes to scan
+        multiple files in parallel. It does not split one file between
+        processes, so it won't improve performance for single file datasets.
+        """
         input_queue = mp.Queue(maxsize=len(self.file_list) + self.cores)
         output_queue = mp.Queue(maxsize=len(self.file_list))
         error_queue = mp.Queue(maxsize=len(self.file_list))
@@ -116,6 +125,12 @@ class Processor:
                 error_queue.put(e)
 
     def run(self) -> List[Dict[str, str]]:
+        """Run sequential scan over a list of files.
+        
+        Scans a list of files one by one. Without the overhead
+        os spawning multiple processes, it's better for smaller
+        datasets.
+        """
         schemas = []
         for file_name in self.file_list:
             try:
