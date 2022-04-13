@@ -3,17 +3,22 @@ import time
 import multiprocessing as mp
 import queue
 from typing import List, Dict, Union
+from pprint import pformat
 
 from .loader import CSVLoader
 from .scanner import Scanner
+from .logger import logger
 
 
 class Processor:
-    """Main class. Puts everyting together and implements multiprocessing."""
+    """Main Data Scanner class.
+
+    Processor is responsible for putting Data Scanner together.
+    It's a main entry point to the package. Allows for sequential
+    and parallel scan of multiple files.
+    """
 
     def __init__(self, path: Union[str, os.PathLike]):
-        assert path is not None, "path must be specified"
-
         self.cores = mp.cpu_count()
 
         if os.path.isfile(path):
@@ -29,9 +34,16 @@ class Processor:
         else:
             self.file_list = []
 
-        assert len(self.file_list) > 0, "no files to scan"
+        if not len(self.file_list) > 0:
+            logger.error(f"No files found for path: '{path}'")
 
     def run_workers(self) -> List[Dict[str, str]]:
+        """Scan multiple files in parallel.
+        
+        This method allows running multiple python processes to scan
+        multiple files in parallel. It does not split one file between
+        processes, so it won't improve performance for single file datasets.
+        """
         input_queue = mp.Queue(maxsize=len(self.file_list) + self.cores)
         output_queue = mp.Queue(maxsize=len(self.file_list))
         error_queue = mp.Queue(maxsize=len(self.file_list))
@@ -66,9 +78,11 @@ class Processor:
             _workers = []
             for process in workers:
                 if not process.is_alive():
-                    print(
-                        f"[INFO] Process {process.name} exited with code {process.exitcode}"
-                    )
+                    log = f"Process {process.name} exited with code {process.exitcode}"
+                    if process.exitcode == 0:
+                        logger.debug(log)
+                    else:
+                        logger.error(log)
                 else:
                     _workers.append(process)
             workers = _workers
@@ -77,7 +91,6 @@ class Processor:
             try:
                 while True:
                     out = output_queue.get_nowait()
-                    print("[WORKER OUTPUT]", out)
                     schemas.append(out)
             except queue.Empty as e:
                 pass
@@ -86,7 +99,7 @@ class Processor:
             try:
                 while True:
                     err = error_queue.get_nowait()
-                    print("[WORKER ERROR]", err)
+                    logger.error(err)
                     schemas.append({})
             except queue.Empty as e:
                 pass
@@ -112,6 +125,12 @@ class Processor:
                 error_queue.put(e)
 
     def run(self) -> List[Dict[str, str]]:
+        """Run sequential scan over a list of files.
+        
+        Scans a list of files one by one. Without the overhead
+        os spawning multiple processes, it's better for smaller
+        datasets.
+        """
         schemas = []
         for file_name in self.file_list:
             try:
@@ -119,6 +138,6 @@ class Processor:
                     schema = Scanner(loader).get_schema()
                 schemas.append(schema)
             except Exception as e:
-                print("[ERROR]", e)
+                logger.error(e)
                 schemas.append({})
         return schemas

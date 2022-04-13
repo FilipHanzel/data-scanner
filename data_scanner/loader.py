@@ -6,16 +6,25 @@ from typing import Union, Iterable
 
 class Loader(abc.ABC):
     @abc.abstractmethod
-    def __enter__(self):
+    def open(self) -> Iterable:
         pass
 
     @abc.abstractmethod
-    def __exit__(self):
+    def close(self):
         pass
+
+    def __enter__(self) -> Iterable:
+        return self.open()
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.close()
 
 
 class CSVLoader(Loader):
     def __init__(self, file_path: Union[str, os.PathLike]):
+        if not os.path.isfile(file_path):
+            raise FileNotFoundError(f"File not found: '{file_path}'")
+
         self.file_path = file_path
 
         self._file = None
@@ -30,9 +39,3 @@ class CSVLoader(Loader):
         self._reader = None
         self._file.close()
         self._file = None
-
-    def __enter__(self) -> Iterable:
-        return self.open()
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.close()

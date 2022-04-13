@@ -120,12 +120,16 @@ class Scanner:
         return "string"
 
     def get_schema(self) -> Dict:
-        head = next(self.frame)
+        try:
+            head = next(self.frame)
+        except:
+            raise ValueError("Failed to read header, empty file")
+
         types = ["unknown"] * len(head)
 
         for row in self.frame:
             if len(row) != len(head):
-                raise ValueError("malformed csv, invalid row length")
+                raise ValueError("Malformed data, invalid row length")
 
             for idx, value in enumerate(row):
                 types[idx] = self._get_dtype(value, types[idx])
