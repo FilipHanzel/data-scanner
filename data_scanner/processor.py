@@ -3,9 +3,11 @@ import time
 import multiprocessing as mp
 import queue
 from typing import List, Dict, Union
+from pprint import pformat
 
 from .loader import CSVLoader
 from .scanner import Scanner
+from .logger import logger
 
 
 class Processor:
@@ -29,7 +31,8 @@ class Processor:
         else:
             self.file_list = []
 
-        assert len(self.file_list) > 0, "no files to scan"
+        if not len(self.file_list) > 0:
+            logger.error(f"No files found for path: '{path}'")
 
     def run_workers(self) -> List[Dict[str, str]]:
         input_queue = mp.Queue(maxsize=len(self.file_list) + self.cores)
@@ -66,9 +69,11 @@ class Processor:
             _workers = []
             for process in workers:
                 if not process.is_alive():
-                    print(
-                        f"[INFO] Process {process.name} exited with code {process.exitcode}"
-                    )
+                    log = f"Process {process.name} exited with code {process.exitcode}"
+                    if process.exitcode == 0:
+                        logger.debug(log)
+                    else:
+                        logger.error(log)
                 else:
                     _workers.append(process)
             workers = _workers
@@ -77,7 +82,6 @@ class Processor:
             try:
                 while True:
                     out = output_queue.get_nowait()
-                    print("[WORKER OUTPUT]", out)
                     schemas.append(out)
             except queue.Empty as e:
                 pass
@@ -86,7 +90,7 @@ class Processor:
             try:
                 while True:
                     err = error_queue.get_nowait()
-                    print("[WORKER ERROR]", err)
+                    logger.error(err)
                     schemas.append({})
             except queue.Empty as e:
                 pass
@@ -119,6 +123,6 @@ class Processor:
                     schema = Scanner(loader).get_schema()
                 schemas.append(schema)
             except Exception as e:
-                print("[ERROR]", e)
+                logger.error(e)
                 schemas.append({})
         return schemas

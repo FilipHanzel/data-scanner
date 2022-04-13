@@ -16,6 +16,9 @@ class Loader(abc.ABC):
 
 class CSVLoader(Loader):
     def __init__(self, file_path: Union[str, os.PathLike]):
+        if not os.path.isfile(file_path):
+            raise FileNotFoundError(f"File not found: '{file_path}'")
+
         self.file_path = file_path
 
         self._file = None
