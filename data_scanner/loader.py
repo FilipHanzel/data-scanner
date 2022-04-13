@@ -6,12 +6,18 @@ from typing import Union, Iterable
 
 class Loader(abc.ABC):
     @abc.abstractmethod
-    def __enter__(self):
+    def open(self) -> Iterable:
         pass
 
     @abc.abstractmethod
-    def __exit__(self):
+    def close(self):
         pass
+
+    def __enter__(self) -> Iterable:
+        return self.open()
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.close()
 
 
 class CSVLoader(Loader):
@@ -33,9 +39,3 @@ class CSVLoader(Loader):
         self._reader = None
         self._file.close()
         self._file = None
-
-    def __enter__(self) -> Iterable:
-        return self.open()
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.close()
