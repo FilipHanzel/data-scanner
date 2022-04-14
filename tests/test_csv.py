@@ -4,19 +4,19 @@ import unittest
 from data_scanner import Processor
 
 
-class TestScannerRun(unittest.TestCase):
+class TestCSVScannerRun(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.script_path = os.path.dirname(os.path.abspath(__file__))
-        cls.data_path = os.path.join(cls.script_path, "data")
+        cls.data_path = os.path.join(cls.script_path, "data", "csv")
 
     def test_empty_file(self):
-        processor = Processor(os.path.join(self.data_path, "empty_file"))
+        processor = Processor(os.path.join(self.data_path, "empty_file"), "csv")
         schemas = processor.run_workers()
         self.assertEqual(schemas, [{}])
 
     def test_header_only(self):
-        processor = Processor(os.path.join(self.data_path, "header_only.csv"))
+        processor = Processor(os.path.join(self.data_path, "header_only.csv"), "csv")
         schemas = processor.run()
         self.assertEqual(
             schemas,
@@ -32,26 +32,32 @@ class TestScannerRun(unittest.TestCase):
         )
 
     def test_malformed_columns(self):
-        processor = Processor(os.path.join(self.data_path, "malformed_columns.csv"))
+        processor = Processor(
+            os.path.join(self.data_path, "malformed_columns.csv"), "csv"
+        )
         schemas = processor.run()
         self.assertEqual(schemas, [{}])
 
     def test_malformed_empty_lines(self):
         # First lines are empty, but exception is suppressed
-        processor = Processor(os.path.join(self.data_path, "malformed_empty_lines.csv"))
+        processor = Processor(
+            os.path.join(self.data_path, "malformed_empty_lines.csv"), "csv"
+        )
         schemas = processor.run()
         self.assertEqual(schemas, [{}])
 
     def test_malformed_whitespace(self):
         # Whitespaces are not ignored, but it's safe to say, file shouldn't look like that
-        processor = Processor(os.path.join(self.data_path, "malformed_whitespace.csv"))
+        processor = Processor(
+            os.path.join(self.data_path, "malformed_whitespace.csv"), "csv"
+        )
         schemas = processor.run()
         self.assertEqual(
             schemas, [{"  column_1": "string", "column_2      ": "string"}]
         )
 
     def test_valid_file(self):
-        processor = Processor(os.path.join(self.data_path, "valid_file.csv"))
+        processor = Processor(os.path.join(self.data_path, "valid_file.csv"), "csv")
         schemas = processor.run()
         self.assertEqual(
             schemas,
@@ -69,19 +75,19 @@ class TestScannerRun(unittest.TestCase):
         )
 
 
-class TestScannerRunWorkers(unittest.TestCase):
+class TestCSVScannerRunWorkers(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.script_path = os.path.dirname(os.path.abspath(__file__))
-        cls.data_path = os.path.join(cls.script_path, "data")
+        cls.data_path = os.path.join(cls.script_path, "data", "csv")
 
     def test_empty_file(self):
-        processor = Processor(os.path.join(self.data_path, "empty_file"))
+        processor = Processor(os.path.join(self.data_path, "empty_file"), "csv")
         schemas = processor.run_workers()
         self.assertEqual(schemas, [{}])
 
     def test_header_only(self):
-        processor = Processor(os.path.join(self.data_path, "header_only.csv"))
+        processor = Processor(os.path.join(self.data_path, "header_only.csv"), "csv")
         schemas = processor.run_workers()
         self.assertEqual(
             schemas,
@@ -97,26 +103,32 @@ class TestScannerRunWorkers(unittest.TestCase):
         )
 
     def test_malformed_columns(self):
-        processor = Processor(os.path.join(self.data_path, "malformed_columns.csv"))
+        processor = Processor(
+            os.path.join(self.data_path, "malformed_columns.csv"), "csv"
+        )
         schemas = processor.run_workers()
         self.assertEqual(schemas, [{}])
 
     def test_malformed_empty_lines(self):
         # First lines are empty, but exception is suppressed
-        processor = Processor(os.path.join(self.data_path, "malformed_empty_lines.csv"))
+        processor = Processor(
+            os.path.join(self.data_path, "malformed_empty_lines.csv"), "csv"
+        )
         schemas = processor.run_workers()
         self.assertEqual(schemas, [{}])
 
     def test_malformed_whitespace(self):
         # Whitespaces are not ignored, but it's safe to say, file shouldn't look like that
-        processor = Processor(os.path.join(self.data_path, "malformed_whitespace.csv"))
+        processor = Processor(
+            os.path.join(self.data_path, "malformed_whitespace.csv"), "csv"
+        )
         schemas = processor.run_workers()
         self.assertEqual(
             schemas, [{"  column_1": "string", "column_2      ": "string"}]
         )
 
     def test_valid_file(self):
-        processor = Processor(os.path.join(self.data_path, "valid_file.csv"))
+        processor = Processor(os.path.join(self.data_path, "valid_file.csv"), "csv")
         schemas = processor.run_workers()
         self.assertEqual(
             schemas,

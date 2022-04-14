@@ -1,7 +1,11 @@
 pendulum
 ujson
+ijson
 
 # Dev
 memory_profiler
 line-profiler
 faker
+
+# Benchmarks
+pandas
