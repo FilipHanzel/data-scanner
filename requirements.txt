@@ -1,5 +1,6 @@
 pendulum
 ujson
+ijson
 
 # Dev
 memory_profiler

@@ -5,8 +5,8 @@ import queue
 from typing import List, Dict, Union
 from pprint import pformat
 
-from .loader import CSVLoader
-from .scanner import Scanner
+from .loader import CSVLoader, JSONLoader
+from .scanner import CSVScanner, JSONScanner
 from .logger import logger
 
 
@@ -18,8 +18,17 @@ class Processor:
     and parallel scan of multiple files.
     """
 
-    def __init__(self, path: Union[str, os.PathLike]):
+    def __init__(self, path: Union[str, os.PathLike], type_: str):
+        assert type_ in ("csv", "json"), "Only json or csv files are supported"
+
         self.cores = mp.cpu_count()
+
+        if type_ == "csv":
+            self.loader = CSVLoader
+            self.scanner = CSVScanner
+        elif type_ == "json":
+            self.loader = JSONLoader
+            self.scanner = JSONScanner
 
         if os.path.isfile(path):
             self.file_list = [path]
@@ -39,7 +48,7 @@ class Processor:
 
     def run_workers(self) -> List[Dict[str, str]]:
         """Scan multiple files in parallel.
-        
+
         This method allows running multiple python processes to scan
         multiple files in parallel. It does not split one file between
         processes, so it won't improve performance for single file datasets.
@@ -51,7 +60,13 @@ class Processor:
         workers = [
             mp.Process(
                 target=self._worker_target,
-                args=(input_queue, output_queue, error_queue),
+                args=(
+                    input_queue,
+                    output_queue,
+                    error_queue,
+                    self.loader,
+                    self.scanner,
+                ),
             )
             for _ in range(self.cores)
         ]
@@ -111,22 +126,26 @@ class Processor:
 
     @staticmethod
     def _worker_target(
-        input_queue: mp.Queue, output_queue: mp.Queue, error_queue: mp.Queue
+        input_queue: mp.Queue,
+        output_queue: mp.Queue,
+        error_queue: mp.Queue,
+        loader: Union[CSVLoader, JSONLoader],
+        scanner: Union[CSVScanner, JSONScanner],
     ) -> None:
         while True:
             file_name = input_queue.get()
             if file_name is None:
                 break
             try:
-                with CSVLoader(file_name) as loader:
-                    schema = Scanner(loader).get_schema()
+                with loader(file_name) as loader:
+                    schema = scanner(loader).get_schema()
                 output_queue.put(schema)
             except Exception as e:
                 error_queue.put(e)
 
     def run(self) -> List[Dict[str, str]]:
         """Run sequential scan over a list of files.
-        
+
         Scans a list of files one by one. Without the overhead
         os spawning multiple processes, it's better for smaller
         datasets.
@@ -134,8 +153,8 @@ class Processor:
         schemas = []
         for file_name in self.file_list:
             try:
-                with CSVLoader(file_name) as loader:
-                    schema = Scanner(loader).get_schema()
+                with self.loader(file_name) as loader:
+                    schema = self.scanner(loader).get_schema()
                 schemas.append(schema)
             except Exception as e:
                 logger.error(e)
