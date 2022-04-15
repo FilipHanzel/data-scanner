@@ -7,7 +7,7 @@ from pprint import pformat
 
 from .loader import CSVLoader, JSONLoader
 from .scanner import CSVScanner, JSONScanner
-from .logger import logger
+from .logger import logger, traceback_format
 
 
 class Processor:
@@ -115,6 +115,7 @@ class Processor:
                 while True:
                     err = error_queue.get_nowait()
                     logger.error(err)
+                    logger.debug("Exception traceback:\n" + traceback_format(err))
                     schemas.append({})
             except queue.Empty as e:
                 pass
@@ -158,5 +159,6 @@ class Processor:
                 schemas.append(schema)
             except Exception as e:
                 logger.error(e)
+                logger.debug("Exception traceback:\n" + traceback_format(e))
                 schemas.append({})
         return schemas

@@ -160,7 +160,11 @@ class JSONScanner:
 
     @staticmethod
     def _is_float(value: Any) -> bool:
-        return isinstance(value, Decimal) or isinstance(value, float)
+        return (
+            isinstance(value, Decimal)
+            or isinstance(value, float)
+            or isinstance(value, int)
+        )
 
     @staticmethod
     def _is_integer(value: Any) -> bool:
@@ -222,8 +226,9 @@ class JSONScanner:
         # If dtype is a string or value is null, then keep the dtype
         if dtype == "string":
             return "string"
+
         if self._is_null(value):
-            return "unknown"
+            return dtype
 
         if dtype == "integer":
             if self._is_integer(value):

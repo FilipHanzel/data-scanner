@@ -3,7 +3,7 @@ import sys
 import abc
 import csv
 import ijson
-from typing import Union, Iterable, Dict, TextIO
+from typing import Union, Iterable, Dict, BinaryIO
 
 
 class Loader(abc.ABC):
@@ -49,32 +49,30 @@ class JSONReader:
     This class is meant to be created by JSONLoader.
     """
 
-    def __init__(self, file: TextIO):
+    def __init__(self, file: BinaryIO):
         self.type = self.peek_type(file)
-        if self.type == "object":
-            self.json_file = ijson.items(file, "")
-        elif self.type == "list":
+        if self.type == "list":
             self.json_file = ijson.items(file, "item")
         else:
-            raise ValueError("Unknown format")
+            self.json_file = ijson.items(file, "")
 
     @staticmethod
-    def peek_type(json_file: TextIO):
+    def peek_type(json_file: BinaryIO) -> Union[str, None]:
         type_ = None
 
         while True:
             char = json_file.read(1)
-            print(char)
             if not char:
+                type_ = "empty"
                 break
-            if char.isspace():
-                continue
             if char == b"{":
                 type_ = "object"
                 break
             if char == b"[":
                 type_ = "list"
                 break
+            if char.isspace():
+                continue
             break
 
         json_file.seek(0)
