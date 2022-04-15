@@ -1,5 +1,6 @@
 import sys
 import logging
+import traceback
 
 logger = logging.getLogger(__name__)
 
@@ -12,3 +13,7 @@ logger.setLevel(logging.INFO)
 
 def setLoggingLevel(level):
     logger.setLevel(level)
+
+
+def traceback_format(exception):
+    return "\n".join(traceback.format_tb(exception.__traceback__))
