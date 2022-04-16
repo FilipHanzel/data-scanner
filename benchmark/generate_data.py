@@ -9,7 +9,7 @@ from faker import Faker
 
 def main():
     script_path = os.path.dirname(os.path.abspath(__file__))
-    data_path = os.path.join(script_path, "data")
+    data_path = os.path.join(script_path, "data", "csv")
 
     if not os.path.exists(data_path):
         os.makedirs(data_path)

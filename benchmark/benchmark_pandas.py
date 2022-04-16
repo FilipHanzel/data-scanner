@@ -6,7 +6,7 @@ import pandas as pd
 
 def main():
     script_path = os.path.dirname(os.path.abspath(__file__))
-    data_path = os.path.join(script_path, "data")
+    data_path = os.path.join(script_path, "data", "csv")
 
     file_names = [
         os.path.join(data_path, file_name) for file_name in os.listdir(data_path)
