@@ -12,7 +12,7 @@ class TestCSVScannerRun(unittest.TestCase):
 
     def test_empty_file(self):
         processor = Processor(os.path.join(self.data_path, "empty_file"), "csv")
-        schemas = processor.run_workers()
+        schemas = processor.run()
         self.assertEqual(schemas, [{}])
 
     def test_header_only(self):
