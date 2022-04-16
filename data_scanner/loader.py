@@ -53,6 +53,8 @@ class JSONReader:
         self.type = self.peek_type(file)
         if self.type == "list":
             self.json_file = ijson.items(file, "item")
+        elif self.type == "empty":
+            self.json_file = iter(())
         else:
             self.json_file = ijson.items(file, "")
 
