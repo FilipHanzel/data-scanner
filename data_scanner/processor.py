@@ -130,16 +130,16 @@ class Processor:
         input_queue: mp.Queue,
         output_queue: mp.Queue,
         error_queue: mp.Queue,
-        loader: Union[CSVLoader, JSONLoader],
-        scanner: Union[CSVScanner, JSONScanner],
+        loaderClass: Union[CSVLoader, JSONLoader],
+        scannerClass: Union[CSVScanner, JSONScanner],
     ) -> None:
         while True:
             file_name = input_queue.get()
             if file_name is None:
                 break
             try:
-                with loader(file_name) as loader:
-                    schema = scanner(loader).get_schema()
+                with loaderClass(file_name) as loader:
+                    schema = scannerClass(loader).get_schema()
                 output_queue.put(schema)
             except Exception as e:
                 error_queue.put(e)
