@@ -1,24 +1,28 @@
-"""Generate fake data for benchmarking"""
-
 import os
 import csv
 import json
+import argparse
 
 from faker import Faker
 
-
 def main():
+    parser = argparse.ArgumentParser(description="Generate fake data for benchmarking")
+    parser.add_argument("--files", "-f", action="store", type=int, default=15, dest="files")
+    parser.add_argument("--rows", "-r", action="store", type=int, default=1_000_000, dest="rows")
+    parser.add_argument("--rows_per_batch", "-b", action="store", type=int, default=1_000, dest="rows_per_batch")
+    args = parser.parse_args()
+    
+    # To speed up generation, fake one batch and write it multiple times
+    rows_count = args.rows
+    rows_batch = args.rows_per_batch
+    n_batches = rows_count // rows_batch
+    files_count = args.files
+    
     script_path = os.path.dirname(os.path.abspath(__file__))
     data_path = os.path.join(script_path, "data", "csv")
 
     if not os.path.exists(data_path):
         os.makedirs(data_path)
-
-    files_count = 15
-    # To speed up generation, fake one batch and write it multiple times
-    rows_count = 1_000_000
-    rows_batch = 1_000
-    n_batches = rows_count // rows_batch
 
     fake = Faker()
 

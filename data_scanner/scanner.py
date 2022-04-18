@@ -1,13 +1,52 @@
 import re
 from decimal import Decimal  # ijson uses decimal
 from typing import Dict, Union, Iterable, Any
-from enum import Enum
+import abc
 
 import ujson
 import pendulum
 
 
-class CSVScanner:
+class Scanner(abc.ABC):
+    def __init__(self, frame: Iterable):
+        self.frame = frame
+
+    @abc.abstractmethod
+    def _is_null(self, value):
+        pass
+
+    @abc.abstractmethod
+    def _is_float(self, value):
+        pass
+
+    @abc.abstractmethod
+    def _is_integer(self, value):
+        pass
+
+    @abc.abstractmethod
+    def _is_boolean(self, value):
+        pass
+
+    @abc.abstractmethod
+    def _is_date_or_timestamp(self, value):
+        pass
+
+    @abc.abstractmethod
+    def _is_json(self, value):
+        pass
+
+    @abc.abstractmethod
+    def _get_dtype(self, value):
+        """Defines how _is_* methods work with each other."""
+        pass
+
+    @abc.abstractmethod
+    def get_schema(self) -> Dict:
+        """Entry point for scanner. Uses _get_dtype to scan an iterable (self.frame)."""
+        pass
+
+
+class CSVScanner(Scanner):
     def __init__(self, frame: Iterable):
         self.frame = frame
         self._nulls = ["", "NULL", "Null", "null", "None", "none", "NA", "N/A"]
@@ -138,7 +177,7 @@ class CSVScanner:
         return dict(zip(head, types))
 
 
-class JSONScanner:
+class JSONScanner(Scanner):
     def __init__(self, frame: Iterable):
         self.frame = frame
         self._nulls = ["", "NULL", "Null", "null", "None", "none", "NA", "N/A"]
@@ -178,7 +217,7 @@ class JSONScanner:
         return isinstance(value, bool) or value in self._booleans
 
     @staticmethod
-    def _is_date_or_timestamp(value: Any) -> bool:
+    def _is_date_or_timestamp(value: Any) -> Union[bool, str]:
         if not isinstance(value, str):
             return False
         try:
