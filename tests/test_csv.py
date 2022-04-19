@@ -4,7 +4,7 @@ import unittest
 from data_scanner import Processor
 
 
-class TestCSVScanner(unittest.TestCase):
+class TestCSVProcessor(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.script_path = os.path.dirname(os.path.abspath(__file__))
@@ -19,6 +19,10 @@ class TestCSVScanner(unittest.TestCase):
         processor = Processor(data_path, "csv")
         schemas = processor.run()
         self.assertEqual(schemas, expected_schemas)
+
+        processor = Processor(data_path, "csv", negotiate_schema=True)
+        schema = processor.run()
+        self.assertEqual(schema, *expected_schemas)
 
         processor = Processor(data_path, "csv")
         schemas = processor.run_workers()
@@ -42,6 +46,10 @@ class TestCSVScanner(unittest.TestCase):
         schemas = processor.run()
         self.assertEqual(schemas, expected_schemas)
 
+        processor = Processor(data_path, "csv", negotiate_schema=True)
+        schema = processor.run()
+        self.assertEqual(schema, *expected_schemas)
+
         processor = Processor(data_path, "csv")
         schemas = processor.run_workers()
         self.assertEqual(schemas, expected_schemas)
@@ -55,6 +63,10 @@ class TestCSVScanner(unittest.TestCase):
         processor = Processor(data_path, "csv")
         schemas = processor.run()
         self.assertEqual(schemas, expected_schemas)
+
+        processor = Processor(data_path, "csv", negotiate_schema=True)
+        schema = processor.run()
+        self.assertEqual(schema, *expected_schemas)
 
         processor = Processor(data_path, "csv")
         schemas = processor.run_workers()
@@ -71,6 +83,10 @@ class TestCSVScanner(unittest.TestCase):
         schemas = processor.run()
         self.assertEqual(schemas, expected_schemas)
 
+        processor = Processor(data_path, "csv", negotiate_schema=True)
+        schema = processor.run()
+        self.assertEqual(schema, *expected_schemas)
+
         processor = Processor(data_path, "csv")
         schemas = processor.run_workers()
         self.assertEqual(schemas, expected_schemas)
@@ -85,6 +101,10 @@ class TestCSVScanner(unittest.TestCase):
         processor = Processor(data_path, "csv")
         schemas = processor.run()
         self.assertEqual(schemas, expected_schemas)
+
+        processor = Processor(data_path, "csv", negotiate_schema=True)
+        schema = processor.run()
+        self.assertEqual(schema, *expected_schemas)
 
         processor = Processor(data_path, "csv")
         schemas = processor.run_workers()
@@ -109,6 +129,10 @@ class TestCSVScanner(unittest.TestCase):
         processor = Processor(data_path, "csv")
         schemas = processor.run()
         self.assertEqual(schemas, expected_schemas)
+
+        processor = Processor(data_path, "csv", negotiate_schema=True)
+        schema = processor.run()
+        self.assertEqual(schema, *expected_schemas)
 
         processor = Processor(data_path, "csv")
         schemas = processor.run_workers()

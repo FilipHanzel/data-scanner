@@ -1,2 +1,3 @@
-from .test_csv import TestCSVScanner
-from .test_json import TestJSONScanner
+from .test_csv import TestCSVProcessor
+from .test_json import TestJSONProcessor
+from .test_negotiator import TestNegotiator

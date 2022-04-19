@@ -8,6 +8,7 @@ from pprint import pformat
 from .loader import CSVLoader, JSONLoader
 from .scanner import CSVScanner, JSONScanner
 from .logger import logger, traceback_format
+from .negotiator import Negotiator
 
 
 class Processor:
@@ -18,8 +19,12 @@ class Processor:
     and parallel scan of multiple files.
     """
 
-    def __init__(self, path: Union[str, os.PathLike], type_: str):
+    def __init__(
+        self, path: Union[str, os.PathLike], type_: str, negotiate_schema: bool = False
+    ):
         assert type_ in ("csv", "json"), "Only json or csv files are supported"
+
+        self.negotiate_schema = negotiate_schema
 
         self.cores = mp.cpu_count()
 
@@ -123,6 +128,8 @@ class Processor:
             # Wait
             time.sleep(0.5)
 
+        if self.negotiate_schema:
+            return Negotiator.negotiate(schemas)
         return schemas
 
     @staticmethod
@@ -161,4 +168,7 @@ class Processor:
                 logger.error(e)
                 logger.debug("Exception traceback:\n" + traceback_format(e))
                 schemas.append({})
+
+        if self.negotiate_schema:
+            return Negotiator.negotiate(schemas)
         return schemas
