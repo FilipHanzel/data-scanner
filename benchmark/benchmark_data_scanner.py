@@ -1,6 +1,7 @@
 import os
 import sys
 import logging
+import argparse
 from timeit import default_timer as timer
 from pprint import pprint
 
@@ -12,22 +13,42 @@ from data_scanner import setLoggingLevel
 
 
 def main():
-    script_path = os.path.dirname(os.path.abspath(__file__))
-    data_path = os.path.join(script_path, "data", "csv")
+    parser = argparse.ArgumentParser(
+        description="Benchmarks for data discovery with pandas."
+    )
+    parser.add_argument(
+        "--type",
+        "-t",
+        action="store",
+        default="all",
+        choices=["all", "csv", "json"],
+        dest="type",
+    )
+    args = parser.parse_args()
+
+    if args.type == "all":
+        types = ["csv", "json"]
+    else:
+        types = [args.type]
 
     setLoggingLevel(logging.DEBUG)
 
-    print("[INFO] Running data_scanner benchmark...")
-    start = timer()
-    processor = Processor(data_path, "csv")
-    output = processor.run_workers()
-    end = timer()
+    script_path = os.path.dirname(os.path.abspath(__file__))
 
-    
-    print(
-        f"[INFO] Data scanner multiprocess run took ~{round(end - start, 5)}s for {len(os.listdir(data_path))} files "
-        f"({round((end - start) / len(os.listdir(data_path)), 5)}s per file)"
-    )
+    for type_ in types:
+        data_path = os.path.join(script_path, "data", type_)
+
+        print(f"[INFO] Running data_scanner {type_} benchmark...")
+
+        start = timer()
+        processor = Processor(data_path, type_)
+        output = processor.run_workers()
+        end = timer()
+
+        print(
+            f"[INFO] Data scanner {type_} multiprocess run took ~{round(end - start, 5)}s "
+            f"for {len(os.listdir(data_path))} files ({round((end - start) / len(os.listdir(data_path)), 5)}s per file)"
+        )
 
 
 if __name__ == "__main__":
