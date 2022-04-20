@@ -99,7 +99,9 @@ class Processor:
             for process in workers:
                 if not process.is_alive():
                     if process.exitcode != 0:
-                        logger.error(f"Process {process.name} exited with code {process.exitcode}")
+                        logger.error(
+                            f"Process {process.name} exited with code {process.exitcode}"
+                        )
                 else:
                     _workers.append(process)
             workers = _workers
@@ -118,7 +120,9 @@ class Processor:
                     err = error_queue.get_nowait()
                     file_name = err.get("file_name")
                     exception = err.get("exception")
-                    logger.error(f"Error scanning file {os.path.basename(file_name)}: {exception}")
+                    logger.error(
+                        f"Error scanning file {os.path.basename(file_name)}: {exception}"
+                    )
                     logger.debug(
                         f"Exception traceback:\n{(traceback_format(exception))}"
                         if len(traceback_format(exception)) > 0
@@ -143,6 +147,12 @@ class Processor:
         loaderClass: Union[CSVLoader, JSONLoader],
         scannerClass: Union[CSVScanner, JSONScanner],
     ) -> None:
+        """Worker  routine.
+
+        Scans files passed through input_queue and pushes
+        schemas into output_queue. If fails to scan - an exception
+        will be pushed into error_queue.
+        """
         while True:
             file_name = input_queue.get()
             if file_name is None:
@@ -168,7 +178,9 @@ class Processor:
                     schema = self.scanner(loader).get_schema()
                 schemas.append(schema)
             except Exception as exception:
-                logger.error(f"Error scanning file {os.path.basename(file_name)}: {exception}")
+                logger.error(
+                    f"Error scanning file {os.path.basename(file_name)}: {exception}"
+                )
                 logger.debug(
                     f"Exception traceback:\n{(traceback_format(exception))}"
                     if len(traceback_format(exception)) > 0

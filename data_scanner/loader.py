@@ -7,6 +7,11 @@ from typing import Union, Iterable, Dict, BinaryIO
 
 
 class Loader(abc.ABC):
+    """Template for loader subclasses.
+
+    Loaders should allow to iterate through the file row by row.
+    """
+
     @abc.abstractmethod
     def open(self) -> Iterable:
         pass
@@ -23,6 +28,8 @@ class Loader(abc.ABC):
 
 
 class CSVLoader(Loader):
+    """Allows to iterate over a CSV file."""
+
     def __init__(self, file_path: Union[str, os.PathLike]):
         if not os.path.isfile(file_path):
             raise FileNotFoundError(f"File not found: '{file_path}'")
@@ -46,7 +53,9 @@ class CSVLoader(Loader):
 class JSONReader:
     """Read and flatten json file iteratively.
 
-    This class is meant to be created by JSONLoader.
+    Implements iterative json file read functionality,
+    similar to builtin csv reader.
+    This class is meant to be used by JSONLoader.
     """
 
     def __init__(self, file: BinaryIO):
@@ -106,6 +115,8 @@ class JSONReader:
 
 
 class JSONLoader(Loader):
+    """Allows to iterate over a JSON file."""
+
     def __init__(self, file_path: Union[str, os.PathLike]):
         if not os.path.isfile(file_path):
             raise FileNotFoundError(f"File not found: '{file_path}'")
