@@ -14,7 +14,7 @@ from data_scanner import setLoggingLevel
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Benchmarks for data discovery with pandas."
+        description="Benchmarks for data discovery with data scanner."
     )
     parser.add_argument(
         "--type",
