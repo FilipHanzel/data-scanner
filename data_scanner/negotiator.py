@@ -3,7 +3,7 @@ from typing import List, Dict
 
 class Negotiator:
     @classmethod
-    def negotiate(cls, schemas: List[Dict[str, str]]):
+    def negotiate(cls, schemas: List[Dict[str, str]]) -> Dict[str, str]:
         result = {}
 
         for schema in schemas:
@@ -17,7 +17,7 @@ class Negotiator:
         return result
 
     @staticmethod
-    def _get_resolved_type(a: str, b: str):
+    def _get_resolved_type(a: str, b: str) -> str:
         if a == "unknown":
             return b
         if b == "unknown":
