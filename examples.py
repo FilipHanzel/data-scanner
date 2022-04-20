@@ -31,3 +31,11 @@ if __name__ == "__main__":
     schemas = Processor(test_json_data_path, "json").run_workers()
     print("Detected schemas:")
     pprint(schemas)
+
+    schemas = Processor(test_csv_data_path, "csv", negotiate_schema=True).run()
+    print("Negotiated schema:")
+    pprint(schemas)
+
+    schemas = Processor(test_json_data_path, "json", negotiate_schema=True).run_workers()
+    print("Negotiated schema:")
+    pprint(schemas)
