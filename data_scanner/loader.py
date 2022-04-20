@@ -12,7 +12,7 @@ class Loader(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def close(self):
+    def close(self) -> None:
         pass
 
     def __enter__(self) -> Iterable:
@@ -37,7 +37,7 @@ class CSVLoader(Loader):
         self._reader = csv.reader(self._file)
         return self._reader
 
-    def close(self):
+    def close(self) -> None:
         self._reader = None
         self._file.close()
         self._file = None
@@ -98,7 +98,7 @@ class JSONReader:
 
         return result
 
-    def __next__(self):
+    def __next__(self) -> Dict:
         return self.flatten(next(self.json_file))
 
     def __iter__(self):
@@ -117,7 +117,7 @@ class JSONLoader(Loader):
         self._reader = JSONReader(self._file)
         return self._reader
 
-    def close(self):
+    def close(self) -> None:
         self._reader = None
         self._file.close()
         self._file = None
