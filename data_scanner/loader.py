@@ -54,7 +54,8 @@ class JSONReader:
     """Read and flatten json file iteratively.
 
     Implements iterative json file read functionality,
-    similar to builtin csv reader.
+    similar to builtin csv reader. There must be either
+    a single json object or a list of objects in the file.
     This class is meant to be used by JSONLoader.
     """
 
