@@ -98,11 +98,8 @@ class Processor:
             _workers = []
             for process in workers:
                 if not process.is_alive():
-                    log = f"Process {process.name} exited with code {process.exitcode}"
-                    if process.exitcode == 0:
-                        logger.debug(log)
-                    else:
-                        logger.error(log)
+                    if process.exitcode != 0:
+                        logger.error(f"Process {process.name} exited with code {process.exitcode}")
                 else:
                     _workers.append(process)
             workers = _workers
@@ -119,10 +116,16 @@ class Processor:
             try:
                 while True:
                     err = error_queue.get_nowait()
-                    logger.error(err)
-                    logger.debug("Exception traceback:\n" + traceback_format(err))
+                    file_name = err.get("file_name")
+                    exception = err.get("exception")
+                    logger.error(f"Error scanning file {os.path.basename(file_name)}: {exception}")
+                    logger.debug(
+                        f"Exception traceback:\n{(traceback_format(exception))}"
+                        if len(traceback_format(exception)) > 0
+                        else "No exception traceback"
+                    )
                     schemas.append({})
-            except queue.Empty as e:
+            except queue.Empty:
                 pass
 
             # Wait
@@ -149,7 +152,7 @@ class Processor:
                     schema = scannerClass(loader).get_schema()
                 output_queue.put(schema)
             except Exception as e:
-                error_queue.put(e)
+                error_queue.put(dict(file_name=file_name, exception=e))
 
     def run(self) -> List[Dict[str, str]]:
         """Run sequential scan over a list of files.
@@ -164,9 +167,13 @@ class Processor:
                 with self.loader(file_name) as loader:
                     schema = self.scanner(loader).get_schema()
                 schemas.append(schema)
-            except Exception as e:
-                logger.error(e)
-                logger.debug("Exception traceback:\n" + traceback_format(e))
+            except Exception as exception:
+                logger.error(f"Error scanning file {os.path.basename(file_name)}: {exception}")
+                logger.debug(
+                    f"Exception traceback:\n{(traceback_format(exception))}"
+                    if len(traceback_format(exception)) > 0
+                    else "No exception traceback"
+                )
                 schemas.append({})
 
         if self.negotiate_schema:
