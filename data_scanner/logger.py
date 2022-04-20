@@ -11,9 +11,9 @@ logger.addHandler(handler)
 logger.setLevel(logging.INFO)
 
 
-def setLoggingLevel(level):
+def setLoggingLevel(level) -> None:
     logger.setLevel(level)
 
 
-def traceback_format(exception):
+def traceback_format(exception) -> str:
     return "\n".join(traceback.format_tb(exception.__traceback__))

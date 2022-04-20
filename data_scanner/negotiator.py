@@ -2,8 +2,16 @@ from typing import List, Dict
 
 
 class Negotiator:
+    """Holds everything needed to reduce/negotiate schemas.
+
+    Schema reduction/negotiation is a process of resolving
+    conflicts between multiple schemas while keeping the most
+    granular data type for given column.
+    """
+
     @classmethod
-    def negotiate(cls, schemas: List[Dict[str, str]]):
+    def negotiate(cls, schemas: List[Dict[str, str]]) -> Dict[str, str]:
+        """Reduce multiple schemas into one."""
         result = {}
 
         for schema in schemas:
@@ -17,7 +25,7 @@ class Negotiator:
         return result
 
     @staticmethod
-    def _get_resolved_type(a: str, b: str):
+    def _get_resolved_type(a: str, b: str) -> str:
         if a == "unknown":
             return b
         if b == "unknown":

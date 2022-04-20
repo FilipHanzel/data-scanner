@@ -8,6 +8,12 @@ import pendulum
 
 
 class Scanner(abc.ABC):
+    """Template for scanner subclasses.
+
+    Scanners should iterate through records and create a schema
+    based on the data those records contain.
+    """
+
     def __init__(self, frame: Iterable):
         self.frame = frame
 
@@ -47,6 +53,8 @@ class Scanner(abc.ABC):
 
 
 class CSVScanner(Scanner):
+    """Allows to iterate over a frame (created by CSVLoader) and generate a schema."""
+
     def __init__(self, frame: Iterable):
         self.frame = frame
         self._nulls = ["", "NULL", "Null", "null", "None", "none", "NA", "N/A"]
@@ -178,6 +186,8 @@ class CSVScanner(Scanner):
 
 
 class JSONScanner(Scanner):
+    """Allows to iterate over a frame (created by JSONLoader) and generate a schema."""
+
     def __init__(self, frame: Iterable):
         self.frame = frame
         self._nulls = ["", "NULL", "Null", "null", "None", "none", "NA", "N/A"]
