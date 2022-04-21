@@ -1,0 +1,5 @@
+column_a,column_b,column_c,column_d,column_e,column_f,column_g,column_h
+123,123.4,False,qYzxkBah,1970-01-01,1970-01-01 01:01:01,,{}
+234.0,5,True,"",1970-01-02T00:00,1970-01-02T02:02,,[]
+null,None,NA,,,,,"{""a"": 1, ""b"": ""c""}"
+,,,,,,,

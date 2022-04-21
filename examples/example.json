@@ -1,0 +1,33 @@
+[
+    {
+        "column_a": "abc",
+        "column_b": "123",
+        "column_c": 123,
+        "column_d": 123.456,
+        "column_e": null,
+        "column_f": "2022-04-21",
+        "column_g": "2022-04-21 00:01:00",
+        "column_h": {
+            "nested_a": "abc",
+            "nested_b": "123",
+            "nested_c": [1, 2, 3]
+        },
+        "column_i": ["a", "b", "c"]
+    },
+    {
+        "column_a": "abc",
+        "column_b": "1234",
+
+        "column_d": 1234.56,
+        "column_e": "None",
+        "column_f": "2022-04-21",
+        "column_g": "2022-04-21 00:01:00",
+        "column_h": {
+            "nested_a": "abc",
+            "nested_b": "123",
+            "nested_c": [1, 2, 3]
+        },
+        "column_i": ["a", "b", "c"]
+    }, 
+    {}
+]

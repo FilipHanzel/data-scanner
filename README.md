@@ -16,7 +16,7 @@ Currently data scanner detects following types:
 
 Data scanner will attempt to downcast as much as possible. For example if column has two values: `1` and `2.0`, an `integer` type will assigned to that column, since `2.0` can be safely converted to an integer.
 
-Usage examples are available in examples.py file.
+Usage examples are available in examples folder.
 
 ### To be implemented:
 - add `bit` type (only 0/1/nulls)
@@ -28,4 +28,3 @@ Usage examples are available in examples.py file.
 - allow changing the list of values recognized as booleans
 - allow changing number of workers in multiprocessing run
 - allow scanning csvs without a header
-- improve examples
