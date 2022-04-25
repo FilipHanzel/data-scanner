@@ -20,7 +20,7 @@ class Processor:
     """
 
     def __init__(
-        self, path: Union[str, os.PathLike], type_: str, negotiate_schema: bool = False
+        self, paths: Union[str, List[str]], type_: str, negotiate_schema: bool = False
     ):
         assert type_ in ("csv", "json"), "Only json or csv files are supported"
 
@@ -35,18 +35,25 @@ class Processor:
             self.loader = JSONLoader
             self.scanner = JSONScanner
 
-        if os.path.isfile(path):
-            self.file_list = [path]
-        elif os.path.isdir(path):
-            self.file_list = [
-                file_path
-                for file_path in [
-                    path + os.sep + file_name for file_name in os.listdir(path)
-                ]
-                if os.path.isfile(file_path)
-            ]
-        else:
-            self.file_list = []
+        if isinstance(paths, str):
+            paths = [paths]
+
+        self.file_list = set()
+        for path in paths:
+            if os.path.isfile(path):
+                self.file_list.add(path)
+            elif os.path.isdir(path):
+                self.file_list.union(
+                    [
+                        file_path
+                        for file_path in [
+                            path + os.sep + file_name for file_name in os.listdir(path)
+                        ]
+                        if os.path.isfile(file_path)
+                    ]
+                )
+            else:
+                logger.warning(f"Path not found: {path}")
 
         if not len(self.file_list) > 0:
             logger.error(f"No files found for path: '{path}'")

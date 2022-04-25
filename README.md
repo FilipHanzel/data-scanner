@@ -23,7 +23,6 @@ Usage examples are available in examples folder.
 - test if using `is` operator would increase comparisson speeds in scanner classes
 - add support for json lines format
 - change negotiate flag in processor to be True as default
-- allow passing a list of paths to the processor
 - allow changing the list of values recognized as nulls
 - allow changing the list of values recognized as booleans
 - allow changing number of workers in multiprocessing run
